@@ -25,6 +25,7 @@ export class Sounds {
    * @return Sound played?
    */
   static play(name) {
+    if (!Sounds.isEnabled) return false;
     const sound = Sounds.get(name);
     if (sound) {
       const obj = sound.clone();
