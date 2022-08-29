@@ -1,9 +1,4 @@
-/** Clamp a number within a range */
-export const clamp = (min, max, n) => {
-  if (n < min) return min;
-  if (n > max) return max;
-  return n;
-};
+import { clamp } from "./util.js";
 
 /** Class containing static control functions for the Sound objects */
 export class Sounds {

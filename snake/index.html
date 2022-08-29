@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake</title>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <td>
+                <div id='canvas-container'></div>
+            </td>
+            <td>
+                <h1 id='game-text'></h1>
+                <b>Game Speed: </b> <input type='number' min='1' max='60' onchange="frameRate(+this.value)" value='7' />
+                <br>
+                <b>Sound</b>
+                <input type="radio" name="sound-enabled" onclick="Sounds.enable();" checked="checked" /> Enabled
+                <input type="radio" name="sound-enabled" onclick="Sounds.disable();" /> Disabled
+            </td>
+        </tr>
+    </table>
+
+    <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>
