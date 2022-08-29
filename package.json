@@ -1,0 +1,23 @@
+{
+  "name": "games",
+  "version": "1.0.0",
+  "description": "This repository holds (small) games that I have created.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/triflicacid/games.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/triflicacid/games/issues"
+  },
+  "homepage": "https://github.com/triflicacid/games#readme",
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
