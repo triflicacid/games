@@ -1,0 +1,52 @@
+:root {
+	--cell-dim: 50px;
+	--cell-pad: 5px;
+	--cell-wh: calc(var(--cell-dim) + 2*var(--cell-pad));
+	--marble-color: lightseagreen;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font-family: Arial;
+}
+
+body > div > div {
+	margin: 10px;
+}
+
+div.game div span {
+	display: inline-block;
+	width: var(--cell-wh);
+	height: var(--cell-wh);
+}
+
+div.game div span.cell {
+	border-radius: 10px;
+	border: 1px solid #000;
+	background-color: white;
+}
+
+div.game div span.marble:before {
+	display: block;
+	position: relative;
+	content: '';
+	top: var(--cell-pad);
+	left: var(--cell-pad);
+	width: var(--cell-dim);
+	height: var(--cell-dim);
+	border-radius: 50%;
+	background-color: var(--marble-color);
+}
+
+div.game div span.selected {
+	border-color: limegreen;
+	background-color: #90EE90;
+}
+
+.message {
+	border: 1px solid black;
+	padding-left: 4px;
+	height: 25%;
+	overflow-y: scroll;
+}
