@@ -76,7 +76,10 @@ export function createAnimation() {
   return {
     getFrameCount: () => frameCount,
     getFPS: () => fps,
-    setFPS: (n) => fps = n,
+    setFPS: (n) => {
+      fps = n;
+      _fpsInterval = 1000 / fps
+    },
     start,
     stop,
   };
