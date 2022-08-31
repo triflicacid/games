@@ -6,6 +6,7 @@ To host, run `npm install` and execute `npm start` (runs `http-server`). Some ga
 
 ## Included Games
 - Chopsticks
+- Clicker
 - Connect 4
 - Marble Solitaire
 - Minesweeper

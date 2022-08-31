@@ -1,0 +1,116 @@
+@keyframes colourLoop {
+	0%   { background: #AADDAA; }
+	15%  { background: #99DE79; }
+	30%  { background: #55FFAB; }
+	45%  { background: #00DEDE; }
+	60%  { background: #66ABFF; }
+	75%  { background: #AE99AD; }
+	90%  { background: #DE7567; }
+	100% { background: #AADDAA; }
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background: #ccc;
+}
+
+.centre {
+	text-align: center;
+}
+
+.centre div {
+	margin: 0 auto;
+}
+
+/** Area **/
+#area {
+	height: 250px;
+	width: 80vw;
+}
+
+#area.passive {
+	background: #4B0082;
+}
+
+#area.passive:hover {
+	cursor: default;
+}
+
+#area.active {
+	animation: colourLoop 3s infinite;
+}
+
+#area.active:hover {
+	cursor: pointer;
+}
+
+/** Button **/
+#button {
+	position: relative;
+	top: 32.5%;
+	left: 0;
+	color: white;
+	font-size: 2em;
+	font-weight: bold;
+	padding: 20px;
+	width: 10%;
+	box-shadow: 3px 4.1px 0px #222;
+	user-select: none;
+}
+
+#button.wide{
+	padding: 10px;
+	width: 60%;
+	font-size: 1.5em;
+}
+
+#button:hover{
+	background: #DE5342;
+	cursor: pointer;
+	box-shadow: 3px 4.1px 0px #222;
+}
+
+#button:active{
+	box-shadow: 2px 3.1px 0px #222;
+}
+
+#button.hidden{
+	display: none;
+}
+
+#button[stage='3'] { background: #FF6347; }
+#button[stage='2'] { background: #FF9947; }
+#button[stage='1'] { background: #63AA47; }
+#button b {font-size: 2em;}
+
+/** Click display **/
+#clicks {
+	font-family: 'Courier New';
+	user-select: none;
+	font-size: 1.5em;
+	color: #ADA;
+	padding: 20px;
+	border: 3px solid #FFF;
+	width: 10%;
+	background: #666;
+}
+
+/** Input box **/
+#seconds {
+	border: 2px solid #FFF;
+	color: #ADA;
+	background: #666;
+	padding: 5px;
+	carat-color: #ABA;
+}
+#seconds:hover, #seconds:active, #seconds:focus {
+	outline: none;
+}
+
+#attribution {
+	font-style: italic;
+	font-size: 90%;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
