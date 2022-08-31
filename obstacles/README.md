@@ -16,6 +16,8 @@ More options are present on the right hand side of the screen
 - **FPS** - control FPS the game is displayed at
 - **Obstacle Speed** - speed at which obstacles move towards the player. Pixels/frame.
 - **Obstacle Spawning** - spawns a new obstacle every `x` frames
+- **Obstacle Generation** - smooth (uses perlin noise) or random (pseudo-random)
+- **Point per Cell** - allows tweaking of perlin noise behaviour. Generates X-coordinate is `obstacleN / ppc`.
 - **Gravity** - gravitational acceleration of player
 - **Jump** - initial vertical velocty of player when jumping, in pixels
 

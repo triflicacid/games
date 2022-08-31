@@ -3,14 +3,18 @@ import { createAnimation } from "../../libs/util.js";
 import { Font } from "../../libs/font.js";
 import { Player } from "./player.js";
 import { Obstacle } from "./obstacle.js";
+import { perlinNoise } from "../../libs/perlinNoise.js";
 
 var canvas, ctx, animate;
 const font = new Font();
+var noise = perlinNoise();
 
 var obstacles = [];
+var obstacleN = 0;
 var player;
 var gameCycles = 0;
 var isPaused = false;
+var useNoise = true, PPC = 5;
 
 function loop() {
     ctx.fillStyle = "#333333";
@@ -102,9 +106,13 @@ function createObstacle() {
     const g_min = Player.RADIUS * 8, g_max = canvas.height / 3;
     const gap = Math.floor(Math.random() * (g_max - g_min)) + g_min;
     const cy_min = 50, cy_max = canvas.height - 50;
-    const cy = Math.floor(Math.random() * (cy_max - cy_min)) + cy_min;
+    const cy = useNoise ?
+        (noise(obstacleN / PPC, Math.sin(obstacleN) * 10) + 1) / 2 * (cy_max - cy_min) + cy_min :
+        Math.floor(Math.random() * (cy_max - cy_min)) + cy_min;
     const w_min = 10, w_max = 20;
     const w = Math.floor(Math.random() * (w_max - w_min)) + w_min;
+
+    obstacleN++;
     return new Obstacle(gap, canvas.width + 10, cy, w, canvas.height);
 }
 
@@ -154,9 +162,16 @@ function main() {
     inpObsSpeed.value = Obstacle.defaultSpeed;
     inpObsSpeed.addEventListener('change', () => Obstacle.defaultSpeed = +inpObsSpeed.value);
 
+    const inpPPC = document.getElementById("ppc");
+    inpPPC = PPC;
+    inpPPC.addEventListener("change", () => PPC = +inpPPC.value);
+
     const inpObsSpawning = document.getElementById('obs-spawn');
     inpObsSpawning.value = Obstacle.spawnEvery;
     inpObsSpawning.addEventListener('change', () => Obstacle.spawnEvery = +inpObsSpeed.value);
+
+    document.getElementById("obs-noise").addEventListener("click", () => useNoise = true);
+    document.getElementById("obs-rand").addEventListener("click", () => useNoise = false);
 
     const inpGravity = document.getElementById('player-gravity');
     inpGravity.value = player.gravity;
