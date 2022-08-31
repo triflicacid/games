@@ -1,0 +1,86 @@
+:root {
+    --spacing: 8px;
+    --chopstick-width: 10px;
+    --chopstick-height: 55px;
+    --scale: 3;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.centre {
+    text-align: center;
+}
+
+.selected {
+    outline: 2px solid red;
+}
+
+.div-hands {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px;
+}
+
+.div-hand {
+    padding: var(--spacing);
+    border: 1px solid #000;
+}
+
+.div-hand.winner {
+    outline: 2px solid forestgreen;
+}
+
+.div-hand > div {
+    display: inline-block;
+    border: 1px solid black;
+    padding: var(--spacing);
+    background-color: khaki;
+    min-height: calc(var(--chopstick-height));
+}
+
+.div-hand.dead > div, .div-hand > div.dead {
+    background-color: tomato;
+}
+
+.div-hand.big > div {
+    min-height: calc(var(--chopstick-height) * var(--scale));
+}
+
+.div-hand > div:not(:last-child) {
+    margin-right: var(--spacing);
+}
+
+.chopstick {
+    display: inline-block;
+    width: var(--chopstick-width);
+    height: var(--chopstick-height);
+    background: maroon;
+    border: 1px solid brown;
+    border-radius: 3px;
+}
+
+.chopstick.big {
+    width: calc(var(--chopstick-width) * var(--scale));
+    height: calc(var(--chopstick-height) * var(--scale));
+}
+
+.chopstick:not(:last-child) {
+    margin-right: calc(var(--chopstick-width) / 2);
+}
+
+.chopstick.big:not(:last-child) {
+    margin-right: calc((var(--chopstick-width) * var(--scale)) / 2);
+}
+
+.div-whoseGo {
+    text-align: center;
+    padding: 25px;
+}
+
+.div-whoseGo > span:first-child {
+    font-size: 2em;
+}
