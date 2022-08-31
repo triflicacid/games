@@ -1,0 +1,85 @@
+body {
+	background: #ccc;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.centre {
+	text-align: center;
+}
+
+.container {
+	margin: 0 auto;
+}
+
+.container[state="off"] {
+	background-color: tomato;
+	cursor: pointer;
+	width: 65%;
+	height: 30vh;
+}
+
+.container[state="wait"] {
+	background-color: #FFBF00; /* Amber */
+	cursor: default;
+	width: 60%;
+	height: 30vh;
+}
+
+.container[state="on"] {
+	background-color: forestgreen;
+	width: 60%;
+	height: 30vh;
+	cursor: pointer;
+}
+
+.container .text {
+	color: antiquewhite;
+	font-size: 2.5em;
+}
+
+.info {
+	display: none;
+	font-size: 1.3em;
+	color: black;
+}
+
+.info t {
+	font-size: 2em;
+	text-decoration: underline;
+}
+
+.info mt {
+	font-size: 1.8em;
+	font-style: italic;
+}
+
+bg {
+	font-size: 2em;
+}
+
+#popup {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0,0,0,0.6);
+	z-index: 1000;
+	display: none;
+}
+
+#popup > #body {
+	position: absolute;
+	top: 20%;
+	left: 40%;
+	background: white;
+	padding: 10px;
+}
+
+#attribution {
+	font-style: italic;
+	font-size: 90%;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}

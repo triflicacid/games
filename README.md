@@ -9,4 +9,5 @@ To host, run `npm install` and execute `npm start` (runs `http-server`). Some ga
 - Connect 4
 - Marble Solitaire
 - Minesweeper
+- Reaction Time
 - Snake
