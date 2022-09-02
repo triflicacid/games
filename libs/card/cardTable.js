@@ -23,38 +23,38 @@ export class CardTable {
    *  - `removeEventListeners: () => void`, which will remove all event listeners from `canvas`.
    *  - `update: boolean`, will be set to `true` if a display update is needed.
   */
-  addEventListeners(canvas, callbacks = {}) {
+  initialise(canvas, callbacks = {}, handlers = {}) {
     const map = new Map(); // [eventName: string]: eventCallback: (event: Event) => void
     let cardsDragging = []; // Which cards are being dragged? (displayed like pile)
     let cardsDraggingSrc = null; // Source Pile of `cardDragging`
     let cardOver = null;
     let isMouseDown = false, mouseX = 0, mouseY = 0;
     let isSuspended = false;
+    const cardPileMargin = 25; // Margin for card piles
 
     const onMouseDown = (event) => {
       if (isSuspended) return;
-      ([mouseX, mouseY] = extractCoords(event));
       isMouseDown = true;
       // Try to drag a card...
       outerLoop: {
         for (const deck of this.decks) {
           for (const pile of deck.piles) {
-            if (pile.isInteractive && pile.size() > 0) {
+            if (pile.isInteractive && pile.size > 0) {
               const _cardOver = pile.cardContains(mouseX, mouseY);
-              if (_cardOver && pile.dragStart(_cardOver, event, eventObject)) {
+              if (_cardOver && (!handlers.onDragStart || handlers.onDragStart(_cardOver, pile, event, obj))) {
                 cardsDraggingSrc = pile;
                 obj.cardsDraggingSrc = pile;
                 cardOver = _cardOver;
                 obj.cardOver = _cardOver;
                 const startI = pile.cards.indexOf(cardOver);
                 for (let i = startI; i < pile.cards.length; i++) cardsDragging.push(pile.cards[i]);
-                pile.drag(event, obj);
+                if (handlers.onDrag) handlers.onDrag(cardsDragging, pile, event, obj);
                 break outerLoop;
               }
             }
           }
         }
-      };
+      }
       if (callbacks.onMouseDown) callbacks.onMouseDown(event, obj, this);
     };
     map.set("mousedown", onMouseDown);
@@ -70,24 +70,25 @@ export class CardTable {
             if (contains) {
               if (cardsDragging.length !== 0 && cardsDraggingSrc) {
                 if (pile !== cardsDraggingSrc && cardsDragging[0] !== pile.peek()) {
+                  let ok = false;
                   // Try inserting into pile
-                  if (pile.dragEnd(event, obj) !== false && pile.push(cardsDragging[0])) {
-                    // Push rest of cards
-                    pile.cards.push(...cardsDragging.slice(1));
+                  if (!handlers.onDragEnd || handlers.onDragEnd(cardsDragging, cardsDraggingSrc, pile, event, obj)) {
+                    // Push cards
+                    pile.cards.push(...cardsDragging);
 
                     for (const card of cardsDragging) {
                       const i = cardsDraggingSrc.cards.indexOf(card);
                       if (i !== -1) cardsDraggingSrc.cards.splice(i, 1);
                     }
-                    pile.drop(true, pile);
-                  } else {
-                    pile.drop(false, undefined);
+                    obj.update = true;
+                    ok = true;
                   }
+                  if (handlers.onDrop) handlers.onDrop(ok, cardsDragging, cardsDraggingSrc, pile, event, obj);
                   break outerLoop;
                 }
               } else {
                 // Register a click on pile
-                pile.click(pile.cardContains(mouseX, mouseY));
+                if (handlers.onClick) handlers.onClick(pile.cardContains(mouseX, mouseY), pile, event, obj);
               }
             }
           }
@@ -114,6 +115,7 @@ export class CardTable {
 
     const onMouseMove = (event) => {
       if (isSuspended) return;
+      ([mouseX, mouseY] = extractCoords(event));
 
       // Unhighlight card if highlighted
       if (cardOver) cardOver.isHighlighted = false;
@@ -124,9 +126,9 @@ export class CardTable {
           // Each pile...
           for (const pile of deck.piles) {
             // If over
-            if (pile.size() > 0) {
+            if (pile.size > 0) {
               const _cardOver = pile.cardContains(mouseX, mouseY);
-              if (_cardOver && pile.hover(_cardOver)) {
+              if (_cardOver && (handlers.onHover ? handlers.onHover(_cardOver, pile, event, obj) : _cardOver === pile.peek())) {
                 cardOver = _cardOver;
                 cardOver.isHighlighted = true;
                 break outerLoop;
@@ -163,7 +165,7 @@ export class CardTable {
     /** Call to remove all events */
     const obj = {
       /** Is a display update required? */
-      update: false,
+      update: true,
 
       /** Return which card the user is current over */
       cardOver,
@@ -178,6 +180,18 @@ export class CardTable {
       cardsDragging,
       cardsDraggingSrc,
 
+      /** Clear cardsDragging etc... */
+      reset: () => {
+        cardsDragging.length = 0;
+        cardsDraggingSrc = undefined;
+        this.cardsDraggingSrc = undefined;
+        cardOver = undefined;
+        this.cardOver = undefined;
+      },
+
+      /** Get current mouse position */
+      getCursorPos: () => ([mouseX, mouseY]),
+
       /** Remove deployed event listeners from `element` */
       removeEventListeners: () => void map.forEach((cb, name) => canvas.removeEventListener(name, cb)),
     };
@@ -188,57 +202,24 @@ export class CardTable {
   /**
    * Display cards
    * @param {CanvasRenderingContext2D} ctx
-   * @param {object} eventObject Returned object from this.addEventListeners
+   * @param {object} initObj Returned object from this.initialise. Optional. Update deck positions if `eventObject.update === true` or is undefined.
    */
-  display(ctx, eventObject) {
+  display(ctx, initObj = undefined) {
     ctx.fillStyle = "#043e06";
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    this.decks.forEach(deck => {
-      if (eventObject.update) deck.update();
-      deck.display(ctx);
-      if (activePiles.indexOf(deck) !== -1) console.log(deck);
-    });
-    eventObject.update = false;
 
-    // Always draw card dragging on top
-    const cardsDragging = eventObject.cardsDragging;
-    if (cardsDragging.length !== 0) {
+    this.decks.forEach(deck => {
+      if (initObj === undefined || initObj.update) deck.update();
+      deck.display(ctx);
+    });
+    if (initObj) initObj.update = false;
+
+    if (initObj) {
+      // Always draw card dragging on top
+      const cardsDragging = initObj.cardsDragging;
       for (let i = 0; i < cardsDragging.length; i++) {
         cardsDragging[i].display(ctx);
       }
     }
-  }
-
-  /**
-   * Try to execute a function in this.functions
-   * @param {String} fname  Function name
-   * @return {undefined | any} Undefined if function not exist, else return value of function
-   */
-  async __fexec(fname) {
-    const f = this.functions[fname];
-    return typeof f === 'function' ? await f(this) : void 0;
-  }
-
-  __p5Init() {
-    const s = p => {
-      p.preload = () => {
-        Deck.loadImages(async () => {
-          await this.__fexec('preload');
-          this.loadedImages = true;
-        });
-      };
-
-      p.setup = () => {
-        const canvas = p.createCanvas(this.cwidth, this.cheight);
-        if (typeof this.cparent == 'string') canvas.parent(this.cparent);
-
-        p.frameRate(16);
-
-        this.__fexec('setup');
-
-        this.doUpdate = true;
-      };
-    };
-    this.p5 = new p5(s);
   }
 }
