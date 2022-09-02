@@ -19,3 +19,4 @@ Some games required the use of a web server, some do not
 - Obstacles
 - Reaction Time
 - Snake
+- Solitaire Classic
