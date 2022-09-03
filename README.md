@@ -18,5 +18,7 @@ Some games required the use of a web server, some do not
 - Minesweeper
 - Obstacles
 - Reaction Time
+- Shooter
 - Snake
 - Solitaire Classic
+- Tick Tack Toe
