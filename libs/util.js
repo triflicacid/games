@@ -36,18 +36,25 @@ export function extractImage(oc, x, y, w, h) {
 /** Return object which will run a callback at `fps` times per second */
 export function createAnimation() {
   let frameCount = 0, fps = 60;
-  let _stop = false, _fpsInterval, _startTime, _now, _then, _elapsed, _callback;
+  let _stop = false, _fpsInterval, _now, _then, _elapsed, _callback, _active = false;
 
   /** Start executing `callback` at `fps` times per second*/
-  function start(callback) {
+  function start(callback = undefined) {
+    if (_active) return false;
+    _active = true;
     _fpsInterval = 1000 / fps;
     _then = Date.now();
-    _callback = callback;
+    if (callback) _callback = callback;
     _animate();
+    return true;
   }
 
   function _animate() {
-    if (_stop) return;
+    if (_stop) {
+      _stop = false;
+      _active = false;
+      return;
+    }
 
     // Calculate elapsed time since last loop
     _now = Date.now();
@@ -80,6 +87,8 @@ export function createAnimation() {
       fps = n;
       _fpsInterval = 1000 / fps
     },
+    setFunction: (f) => void (_callback = f),
+    isActive: () => _active,
     start,
     stop,
   };
