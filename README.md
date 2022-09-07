@@ -19,6 +19,7 @@ Some games required the use of a web server, some do not
 - Obstacles
 - Reaction Time
 - Shooter
+- Simon
 - Snake
 - Solitaire Classic
 - Tick Tack Toe
