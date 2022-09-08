@@ -14,6 +14,7 @@ Some games required the use of a web server, some do not
 - Chopsticks
 - Clicker
 - Connect 4
+- **IN PROGRESS** Ludo
 - Marble Solitaire
 - Minesweeper
 - Obstacles

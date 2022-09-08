@@ -131,3 +131,7 @@ export async function sleep(ms) {
     setTimeout(resolve, ms);
   });
 }
+
+export function toTitleCase(string) {
+  return string.split(" ").map(str => str[0].toUpperCase() + str.substring(1).toLowerCase()).join(" ");
+}
