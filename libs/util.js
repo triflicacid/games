@@ -124,3 +124,10 @@ export function shuffleArray(array) {
   }
   return shuffled;
 }
+
+/** Delay for `ms` milliseconds */
+export async function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}

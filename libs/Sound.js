@@ -40,7 +40,7 @@ export class Sounds {
    * Create a new Sound object
    * @param  name    Name of sound
    * @param  path    Path to sound file
-   * @param  loadNow    Fetch sound data from file now?
+   * @param  loadNow    Fetch sound data from file now? (default = true)
    */
   static async create(name, path, loadNow = true) {
     if (Sounds.sounds[name] == undefined) {

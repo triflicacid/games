@@ -21,5 +21,6 @@ Some games required the use of a web server, some do not
 - Shooter
 - Simon
 - Snake
+- Snakes 'n' Ladders
 - Solitaire Classic
 - Tick Tack Toe
