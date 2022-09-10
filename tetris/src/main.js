@@ -47,6 +47,7 @@ function loop() {
     let ok = tetris.moveShape(0, 1);
     if (ok) {
       softDropRows++;
+      clearLines();
       draw();
     } else {
       // Cannot move down; freeze shape
