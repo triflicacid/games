@@ -1,0 +1,52 @@
+{
+  "chess": {
+    "name": "Chess",
+    "singleplayer": false,
+    "external": "https://github.com/triflicacid/nodejs-chess"
+  },
+  "clicker": {
+    "name": "Clicker"
+  },
+  "connect-4": {
+    "name": "Connect Four"
+  },
+  "chopsticks": {
+    "name": "Chopsticks"
+  },
+  "ludo": {
+    "name": "Ludo"
+  },
+  "marble-solitaire": {
+    "name": "Marble Solitaire"
+  },
+  "minesweeper": {
+    "name": "Minesweeper"
+  },
+  "obstacles": {
+    "name": "Obstacles"
+  },
+  "reaction-time": {
+    "name": "Reaction Time"
+  },
+  "shooter": {
+    "name": "Shooter"
+  },
+  "simon": {
+    "name": "Simon Says"
+  },
+  "snake": {
+    "name": "Snake"
+  },
+  "snakes-n-ladders": {
+    "name": "Snakes & Ladders"
+  },
+  "solitaire-classic": {
+    "name": "Solitaire"
+  },
+  "tetris": {
+    "name": "Tetris"
+  },
+  "ticktacktoe": {
+    "name": "Tick-Tack-Toe"
+  }
+}

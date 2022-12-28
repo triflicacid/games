@@ -2,26 +2,12 @@
 
 This repository holds (small) games that I have created.
 
-Some games required the use of a web server, some do not
+Both single- and multi-player games are included, stored in the `single/` and `multi/` directories respectively.
 
-- If a webserver is required:
-    - Download `npm`, run `npm install http-server` and run `http-server` in the console
-    - Download python, and run `python -m SimpleHTTPServer 8080`. If it is not installed, run `pip install SimpleHTTPServer` and try again.
-    - Launch chrome, go to https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb and download. Choose `games/` as the folder, and click the link (like `http://127.0.0.1:[port]`) to launch.
-- Else, you can double-click the `index.html` file and start playing!
-
-## Included Games
-- Chopsticks
-- Clicker
-- Connect 4
-- Ludo
-- Marble Solitaire
-- Minesweeper
-- Obstacles
-- Reaction Time
-- Shooter
-- Simon
-- Snake
-- Snakes 'n' Ladders
-- Solitaire Classic
-- Tick Tack Toe
+## TODO
+Games:
+- Chase the Ace (multiplayer)
+- Sevens (multiplayer)
+- Normal and reverse Knock-Out Wist (multiplayer)
+- Rummy (multiplayer)
+- Uno (singleplayer?, multiplayer)

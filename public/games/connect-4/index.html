@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="shortcut icon" href="icon.png" type="image/png">
+  <link rel="stylesheet" href="assets/style.css" type="text/css">
+  <title>Connect Four</title>
+</head>
+
+<body>
+  <table>
+    <tr>
+      <td rowspan='10'>
+        <div id="canvas-container"></div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h2><span id='whos-go'></span>'s Go</h2>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <button type="button" id='new-game'>New Game</button>
+        <hr>
+        <b>Sound</b>
+        <input type="radio" name="sound-enabled" id="sound-enable" checked="checked" /> Enabled
+        <input type="radio" name="sound-enabled" id="sound-disable" /> Disabled
+      </td>
+    </tr>
+  </table>
+
+  <script src="src/main.js" type="module" charset="utf-8"></script>
+</body>
+
+</html>
