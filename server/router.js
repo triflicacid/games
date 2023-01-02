@@ -1,9 +1,10 @@
-const express = require('express');
-const MarkdownIt = require('markdown-it');
-const fs = require('fs');
-const getGames = require('./games.js');
+import express from 'express';
+import MarkdownIt from 'markdown-it';
+import fs from 'fs';
+import getGames from './games.js';
 
-const router = express.Router();
+export const router = express.Router();
+export default router;
 
 router.get('/games', (req, res) => {
   res.redirect("/");
@@ -23,5 +24,3 @@ router.get('/help/:name/', (req, res) => {
     res.send(`<h1>404 Not Found</h1><p>Unknown game identifier \`${name}'</p><span>Queried path: <code>${mdPath}</code></span>`);
   }
 });
-
-module.exports = router;

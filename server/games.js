@@ -1,10 +1,10 @@
-const fs = require('fs');
+import { readFileSync } from 'fs';
 
 var json;
 
 // Return or get cached game data from 'games.json'
-module.exports = function () {
+export default function () {
   if (json) return json; // If cached, return
-  const buffer = fs.readFileSync("public/assets/games.json");
+  const buffer = readFileSync("public/assets/games.json");
   return (json = JSON.parse(buffer.toString()));
 };

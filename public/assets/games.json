@@ -48,5 +48,10 @@
   },
   "ticktacktoe": {
     "name": "Tick-Tack-Toe"
+  },
+  "uno": {
+    "name": "Uno",
+    "icon": "assets/favicon.ico",
+    "singleplayer": false
   }
 }
