@@ -26,3 +26,18 @@ export async function userLogIn(username, password) {
 export async function createUser(username, password) {
   return await db.run("INSERT INTO Users (Username, Password, Created) VALUES (?, ?, ?)", [username, password, Date.now().toString()]);
 }
+
+/** Delete user */
+export async function deleteUser(uid) {
+  return await db.run("DELETE FROM Users WHERE ID = ?", [uid]);
+}
+
+/** Change a user's username */
+export async function changeUsername(uid, username) {
+  return await db.run("UPDATE Users SET Username = ? WHERE ID = ?", [username, uid]);
+}
+
+/** Change a user's password */
+export async function changePassword(uid, password) {
+  return await db.run("UPDATE Users SET Password = ? WHERE ID = ?", [password, uid]);
+}

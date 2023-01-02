@@ -1,4 +1,4 @@
-import { userLogIn, getUsers, createUser, getUser } from "../database.js";
+import { userLogIn, getUsers, createUser, deleteUser, getUser, changeUsername, changePassword } from "../database.js";
 import UserSocket from "../lib/UserSocket.js";
 
 export class Connection extends UserSocket {
@@ -42,9 +42,44 @@ export class Connection extends UserSocket {
       }
     });
 
+    // Request to change username
+    this.onEvent("change-username", async (username) => {
+      if (this.user) {
+        const users = await getUsers(username);
+        if (users.length === 0) {
+          await changeUsername(this.user.ID, username);
+          this.user.Username = username;
+          this.emit("get-user-info", this.getSafeUser());
+        } else {
+          this.emit("popup", { title: 'Cannot Change Username', message: `Username '${username}' is already taken.` });
+        }
+      }
+    });
+
+    // Request to change username
+    this.onEvent("change-password", async (password) => {
+      if (this.user) {
+        if (password !== this.user.Password) {
+          await changePassword(this.user.ID, password);
+          this.user.Password = password;
+        }
+      }
+    });
+
     // Request to log user out
     this.onEvent("user-logout", () => {
       this.user = null;
+    });
+
+    // Request to delete account
+    this.onEvent("user-delete", async (id) => {
+      if (this.user && this.user.ID === id) {
+        this.log(`Deleted account ID=${this.user.ID}`);
+        await deleteUser(id);
+        this.user = null;
+      } else {
+        this.log(`Failed to delete account`);
+      }
     });
   }
 }
