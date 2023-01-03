@@ -1,4 +1,5 @@
 import { userLogIn, getUsers, createUser, deleteUser, getUser, changeUsername, changePassword } from "../database.js";
+import { isValidGameName } from "../games.js";
 import UserSocket from "../lib/UserSocket.js";
 
 export class Connection extends UserSocket {
@@ -81,6 +82,19 @@ export class Connection extends UserSocket {
         this.log(`Failed to delete account`);
       }
     });
+  }
+
+  /** @override Check that payload is a valid game name */
+  _checkTokenPayload(payload) {
+    return isValidGameName(payload);
+  }
+
+  /** @override */
+  getDataToCache(gameName) {
+    return {
+      ...super.getDataToCache(),
+      game: gameName,
+    };
   }
 }
 

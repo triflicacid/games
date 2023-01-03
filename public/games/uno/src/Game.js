@@ -1,7 +1,6 @@
-import { CARDS, createDeck, C_HEIGHT, C_WIDTH, getCard, isWildcard } from "./cards.js";
-import { inRect, shuffle } from "../utils.js";
+import { CARDS, C_HEIGHT, C_WIDTH, getCard, isWildcard } from "./cards.js";
+import { inRect } from "/libs/util.js";
 
-const DECK_SIZE = 7;
 const TEXT_SPACE = 10;
 
 export const DISPLAYMODE = Object.freeze({

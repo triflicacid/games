@@ -3,16 +3,19 @@ import { Server as SocketIOServer } from 'socket.io';
 import router from './router.js';
 import { db, getUser } from "./database.js";
 import getConnection from './connections/get.js';
+import gameExterns from "./games/extern.js";
 import { terminate } from "./utils.js";
-import UserSocket from './lib/UserSocket.js';
 
 /** New socket connection -- forward to connection object */
 async function onConnection(sock) {
   const src = sock.handshake.query.src; // Get source
-  console.log("New Connection! Source: " + src);
+  console.log(`New connection from \`${src}' -- ${sock.id}`);
   let conn = await getConnection(sock, src); // Get customised connection handler
   if (conn) {
-
+    // ! DEBUG
+    const user = await getUser(1);
+    conn.user = user;
+    conn.invokeEvent("get-user-info");
   } else { // Could not locate connection object
     sock.emit("message", "ERROR: Unknown source: " + src);
     sock.emit("unknown-source", src);
@@ -21,6 +24,14 @@ async function onConnection(sock) {
 }
 
 export async function start(port) {
+  // Initialise each game
+  console.log("Initialising games");
+  for (let game in gameExterns) {
+    console.log(` - ${game}...`);
+    const extern = gameExterns[game];
+    await extern.init();
+  }
+
   // Open database
   await db.open();
   console.log(`[database]: Opened connection: ${db.path}`);

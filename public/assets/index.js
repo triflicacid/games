@@ -1,17 +1,8 @@
-import { io } from "https://cdn.socket.io/4.3.0/socket.io.esm.min.js";
 import Popup from "../libs/Popup.js";
-import { setupUserSocket, genToken, getUserInfo } from "/assets/user.js";
+import { createSocket, genToken, getUserInfo } from "/assets/socket-utils.js";
 
 //#region Socket
-const socket = io(undefined, {
-  query: {
-    src: "index",
-  },
-});
-setupUserSocket(socket); // Basic util function for user
-
-socket.on("message", msg => console.log(msg));
-socket.on("popup", ({ title, message }) => new Popup(title).insertAdjacentText("beforeend", message).show());
+const socket = createSocket("index");
 
 socket.on("get-user-info", user => {
   gUser = user;
@@ -59,15 +50,20 @@ function populateGameList(games) {
     }
     div.dataset.singleplayer = singleplayer;
     div.addEventListener("click", async () => {
-      if (game.external) {
-        window.open(game.external); // External link
-      } else {
+      if (game.external) { // External link
+        window.open(game.external);
+      } else if (singleplayer) { // Join singleplayer game
         let url = "games/" + name + "/" + (game.target || "");
-        if (gUser && !singleplayer) {
-          const token = await genToken();
-          url += "?" + token;
-        }
         window.open(url);
+      } else { // Join multiplayer game -- common dashboard
+        if (gUser) {
+          let url = "games/join.html?" + (await genToken(name)) + "&game=" + name;
+          window.open(url);
+        } else {
+          new Popup("Unable to Join Game")
+            .insertAdjacentText("beforeend", `Cannot join ${game.name} -- you must be logged in to access multiplayer games.`)
+            .show();
+        }
       }
     });
     const iconPath = 'games/' + name + '/' + (game.icon ? game.icon : 'icon.png');
@@ -89,6 +85,7 @@ function populateGameList(games) {
   }
 }
 
+/** Populate user information in the banner */
 function populateUserInfo(user) {
   const div = document.getElementById("user-status");
   div.innerHTML = "";

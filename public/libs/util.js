@@ -135,3 +135,7 @@ export async function sleep(ms) {
 export function toTitleCase(string) {
   return string.split(" ").map(str => str[0].toUpperCase() + str.substring(1).toLowerCase()).join(" ");
 }
+
+export function inRect(x, y, rx, ry, rw, rh) {
+  return (x > rx && x < rx + rw && y > ry && y < ry + rh);
+}

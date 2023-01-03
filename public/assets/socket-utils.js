@@ -1,3 +1,6 @@
+import { io } from "https://cdn.socket.io/4.3.0/socket.io.esm.min.js";
+import Popup from "/libs/Popup.js";
+
 var token, tokenData = null, socket, getTokenDataResolve, getTokenDataReject, genTokenResolve, getUserInfoResolve;
 
 /** Get the token given to us in the URL */
@@ -10,10 +13,10 @@ export function getToken() {
 }
 
 /** Generate a token */
-export async function genToken() {
+export async function genToken(payload = undefined) {
   return await new Promise(res => {
     genTokenResolve = res;
-    socket.emit("gen-token");
+    socket.emit("gen-token", payload);
   });
 }
 
@@ -37,21 +40,42 @@ export async function getUserInfo() {
   });
 }
 
-/** Setup socket events */
-export function setupUserSocket(sock) {
-  socket = sock;
+function htmlErrorTemplate(title, message) {
+  const div = document.createElement("div");
+  const h1 = document.createElement("h1");
+  h1.insertAdjacentText("beforeend", title);
+  div.appendChild(h1);
+  const p = document.createElement("p");
+  p.insertAdjacentHTML("beforeend", message);
+  div.appendChild(p);
+  return div;
+}
 
-  // Basic server message
-  sock.on("message", console.log);
-
-  sock.on("unknown-source", source => {
-    const div = document.createElement("div");
-    div.insertAdjacentHTML("beforeend", `<h1>HTTP 404 - Not Found</h1><p>No exposed connection for source \`\`<code>${source}</code>''</p><a href='/'>Go Home</a>`);
-    document.body.innerHTML = "";
-    document.body.appendChild(div);
+/** Create socket, or return established socket */
+export function createSocket(src) {
+  if (socket) return socket;
+  socket = io(undefined, {
+    query: {
+      src,
+    },
   });
 
-  sock.on("redeem-token", resp => {
+  //#region Initialised Listeners
+  // Basic server message
+  socket.on("message", console.log);
+
+  // Popup
+  socket.on("popup", ({ title, message }) => new Popup(title).insertAdjacentHTML("beforeend", "<p>" + message + "</p>").show());
+
+  // Redirect
+  socket.on("redirect", url => (window.location.href = url));
+
+  socket.on("unknown-source", source => {
+    document.body.innerHTML = "";
+    document.body.appendChild(htmlErrorTemplate("HTTP 404 - Not Found", `No exposed connection for source \`\`<code>${source}</code>''`));
+  });
+
+  socket.on("redeem-token", resp => {
     if (resp.ok) {
       if (getTokenDataResolve) {
         getTokenDataResolve(resp.data);
@@ -59,26 +83,32 @@ export function setupUserSocket(sock) {
     } else {
       if (getTokenDataReject) {
         // Error message
-        const div = document.createElement("div");
-        div.insertAdjacentHTML("beforeend", `<h1>HTTP 401 - Unauthorised</h1><p>Invalid authentication token <code>${resp.token}</code></p><a href='/'>Go Home</a>`);
         document.body.innerHTML = "";
-        document.body.appendChild(div);
+        document.body.appendChild(htmlErrorTemplate("HTTP 401 - Unauthorised", `Invalid authentication token <code>${resp.token}</code>`));
         getTokenDataReject(resp);
       }
     }
     getTokenDataResolve = getTokenDataReject = undefined;
   });
-  sock.on("get-user-info", user => {
+  socket.on("get-user-info", user => {
     if (getUserInfoResolve) {
       getUserInfoResolve(user);
       getUserInfoResolve = undefined;
     }
   });
 
-  sock.on("gen-token", token => {
+  socket.on("gen-token", token => {
     if (genTokenResolve) {
       genTokenResolve(token);
       genTokenResolve = undefined;
     }
   });
+
+  socket.on("html-error", ({ title, message }) => {
+    document.body.innerHTML = "";
+    document.body.appendChild(htmlErrorTemplate(title, message));
+  });
+  //#endregion
+
+  return socket;
 }

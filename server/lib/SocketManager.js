@@ -9,7 +9,7 @@ export class SocketManager {
   }
   /** Get socket ID */
   get id() { return this.sock.id; }
-  /** Called when socket is disconnected */
+  /** Called when socket is disconnected / called to disconnect the socket */
   disconnect() {
     SocketManager.all.delete(this.sock.id);
     this.sock.disconnect(true);

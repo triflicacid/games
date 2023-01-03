@@ -1,22 +1,12 @@
-import { io } from "https://cdn.socket.io/4.3.0/socket.io.esm.min.js";
-import { setupUserSocket, getTokenData, getUserInfo } from "/assets/user.js";
+import { createSocket, getTokenData, getUserInfo } from "/assets/socket-utils.js";
 import { DISPLAYMODE, Game } from "./Game.js";
 import { loadSpritesheet, CARDS } from "./cards.js";
 import { Sounds } from "/libs/Sound.js";
 import Popup from "/libs/Popup.js";
 
 //#region Socket
-const socket = io(undefined, {
-  query: {
-    src: 'uno/play',
-  },
-});
-socket.on("redirect", url => (window.location.href = url));
-socket.on("popup", ({ title, message }) => {
-  new Popup(title).insertAdjacentHTML("beforeend", `<p>${message}</p>`).show();
-});
+const socket = createSocket("uno");
 socket.on("game-data", async (data) => {
-  console.log("game-data", data);
   await load(canvasTarget, data);
 
   if (data.isOwner) {
@@ -26,12 +16,22 @@ socket.on("game-data", async (data) => {
     btnKick.innerText = "Kick Player";
     btnKick.addEventListener('click', clickKickPlayer);
     document.body.appendChild(btnKick);
+
+    document.body.insertAdjacentHTML("beforeend", `&nbsp; | &nbsp; Game Locked: `);
+    checkboxLocked = document.createElement("input");
+    checkboxLocked.type = "checkbox";
+    checkboxLocked.checked = !!data.locked;
+    checkboxLocked.addEventListener("change", () => socket.emit("lock", checkboxLocked.checked));
+    document.body.appendChild(checkboxLocked);
   }
 });
-setupUserSocket(socket);
+
+socket.on("locked", bool => {
+  checkboxLocked.checked = !!bool;
+})
 //#endregion
 
-var canvasTarget, countTarget, gameIdTarget, game;
+var canvasTarget, countTarget, gameIdTarget, game, checkboxLocked;
 
 async function load(htmlTarget, data) {
   // == SOUNDS ==
@@ -52,7 +52,8 @@ async function load(htmlTarget, data) {
   game = new Game();
   game.init(data);
   let defaultMessageStack = [];
-  gameIdTarget.innerText = data.id;
+  gameIdTarget.innerHTML = data.name + " &mdash; " + data.id;
+  document.title += ": " + data.name;
 
   //#region Load Socket Events
   // Update client count
@@ -98,7 +99,6 @@ async function load(htmlTarget, data) {
 
   // Set property of game
   socket.on("update", payload => {
-    console.log("Update", payload);
     if (payload.props) {
       for (let prop in payload.props) {
         game[prop] = payload.props[prop];

@@ -1,4 +1,5 @@
 import IndexConnection from "./index.js";
+import JoinConnection from "./join.js";
 import { existsSync } from "fs";
 
 export async function getConnection(socket, source) {
@@ -6,8 +7,10 @@ export async function getConnection(socket, source) {
   const Constructor = await (async function () {
     if (top === "index") {
       return IndexConnection;
+    } else if (top === "join") {
+      return JoinConnection;
     } else {
-      const mpath = `games/${top}/connections/${sub}.js`;
+      const mpath = sub === undefined ? `games/${top}/Connection.js` : `games/${top}/connections/${sub}.js`;
       // Check if module file exists
       if (existsSync("server/" + mpath)) {
         // try {

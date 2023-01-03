@@ -1,10 +1,17 @@
-import { createDeck, canPlayCard, isWildcard, getColorOffset, isPickup4, C_TYPES } from "../../../public/games/uno/src/play/cards.js";
-import { shuffle } from "../../../public/games/uno/src/utils.js";
-import UserSocket from "../../lib/UserSocket.js";
-import { saveGameFile } from "./game-file.js";
+import BaseGame from "../Game.js";
+import { createDeck, canPlayCard, isWildcard, getColorOffset, isPickup4, C_TYPES } from "../../../public/games/uno/src/cards.js";
+import { ID as GAME_ID } from "./extern.js"
 
 const DECK_SIZE = 7;
-export const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+/** Shuffle a given deck (mutates in place) */
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; --i) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 export const DISPLAYMODE = Object.freeze({
   GAME: 1, // Normal game view
@@ -12,15 +19,10 @@ export const DISPLAYMODE = Object.freeze({
   MESSAGE: 3, // Plain background (perfect for displaying messages ;))
 });
 
-export class Game {
+export class Game extends BaseGame {
   constructor(playerCount) {
-    // Fields for game save
-    this.id = undefined; // Game ID (filename)
-    this.name = undefined; // Game name
-    this.owner = undefined; // ID of the owner
+    super(GAME_ID, playerCount);
     this.winner = null; // Player index of winner
-
-    this.players = Array.from({ length: playerCount }).fill(null); // Array of socket IDs
     this.hands = []; // Array of player decks
     this.ptr = 0; // Player poingter - whose go is it?
     this.dir = 1; // Game direction
@@ -32,21 +34,6 @@ export class Game {
     this.event = event_void();
   }
 
-  /** Emit message to a particular player */
-  emit(player, event, eventData = undefined) {
-    const socket = UserSocket.all.get(this.players[player]);
-    if (socket) socket.emit(event, eventData);
-  }
-
-  /** Emit a message to every player, skipping listed players. */
-  emitAll(event, eventData = undefined, skip = []) {
-    this.players.forEach((sid, i) => {
-      if (!skip.includes(i) && sid !== null) {
-        this.emit(i, event, eventData);
-      }
-    });
-  }
-
   /** Emit - update the hand of a particular player */
   emitUpdateHand(player) {
     this.emit(player, "set-hand", { index: player, value: this.hands[player] });
@@ -54,46 +41,46 @@ export class Game {
   }
 
   /**
-   * Attempt to initialise the game from saved game data, or new game. Returns indicator code.
+   * Create a new game. Return status code.
    * 0 - OK
    * 1 - No players
    * 2 - Too many players
   */
-  init(gameData = undefined) {
-    if (gameData) {
-      this.id = gameData.id;
-      this.name = gameData.name;
-      this.owner = gameData.owner; // ID of the owner
-      this.winner = gameData.winner;
-
-      this.deck = gameData.deck;
-      this.discard = gameData.discard;
-      this.ptr = gameData.current;
-      this.dir = gameData.dir;
-      this.hands = gameData.players;
-      this.wildAccept = gameData.wildAccept;
-      this.event = gameData.event;
-    } else {
-      if (this.players.length === 0) return 1;
-      const deck = createDeck();
-      // Too few cards?
-      if (deck.length - this.players.length * DECK_SIZE - 1 <= 0) return 2;
-      // Shuffle deck
-      shuffle(deck);
-      // Reset game data
-      this.reset();
-      // Deal to players
-      this.deck = deck;
-      for (let i = 0; i < this.players.length; i++) {
-        for (let j = 0; j < DECK_SIZE; j++) {
-          let k = Math.floor(Math.random() * this.deck.length); // Get random card index
-          this.hands[i].push(this.deck[k]); // Add to players hand
-          this.deck.splice(k, 1); // Remove card from deck
-        }
+  initNew() {
+    super.initNew();
+    if (this.players.length === 0) return 1;
+    const deck = createDeck();
+    // Too few cards?
+    if (deck.length - this.players.length * DECK_SIZE - 1 <= 0) return 2;
+    // Shuffle deck
+    shuffle(deck);
+    // Reset game data
+    this.reset();
+    // Deal to players
+    this.deck = deck;
+    for (let i = 0; i < this.players.length; i++) {
+      for (let j = 0; j < DECK_SIZE; j++) {
+        let k = Math.floor(Math.random() * this.deck.length); // Get random card index
+        this.hands[i].push(this.deck[k]); // Add to players hand
+        this.deck.splice(k, 1); // Remove card from deck
       }
-      // Add topmost card to discard
-      this.discard.push(this.deck.pop());
     }
+    // Add topmost card to discard
+    this.discard.push(this.deck.pop());
+  }
+
+  /** Initialise game from saved GameData */
+  initFromSaved(gameData) {
+    super.initFromSaved(gameData);
+
+    this.winner = gameData.winner;
+    this.deck = gameData.deck;
+    this.discard = gameData.discard;
+    this.ptr = gameData.current;
+    this.dir = gameData.dir;
+    this.hands = gameData.players;
+    this.wildAccept = gameData.wildAccept;
+    this.event = gameData.event;
 
     return 0;
   }
@@ -112,11 +99,6 @@ export class Game {
   /** Return array of available player slots */
   getPlayerSlots() {
     return this.players.map((_, i) => i).filter(i => this.players[i] === null);
-  }
-
-  /** Get name of a given player */
-  getPlayerName(player) {
-    return this.players[player] === null ? alpha[player] : UserSocket.all.get(this.players[player]).user.Username;
   }
 
   /** Get whose go it currently is (+ an offset) */
@@ -241,10 +223,10 @@ export class Game {
                 render: true,
               });
             } else {
-              this.emit(player, "game-error", "Cannot play card");
+              return this.emit(player, "game-error", "Cannot play card");
             }
           } else {
-            this.emit(player, "game-error", "Cannot pick up card");
+            return this.emit(player, "game-error", "Cannot pick up card");
           }
         }
       }
@@ -252,7 +234,7 @@ export class Game {
       // Save game
       this.save();
     } else {
-      this.emit(player, "game-error", "It is not your go!");
+      return this.emit(player, "game-error", "It is not your go!");
     }
   }
 
@@ -282,6 +264,29 @@ export class Game {
     }
   }
 
+  attemptJoinForeign(req) {
+    // If all empty, owner isn't here so don't join
+    const slots = this.getPlayerSlots();
+    if (slots.length === this.players.length) {
+      return { error: true, msg: `Cannot join game without the owner` };
+    }
+    if (slots.length === 0) {
+      return { error: true, msg: `Game is full` };
+    } else {
+      return { error: false, data: { player: slots[0] } };
+    }
+  }
+
+  attemptJoinOwner() {
+    // Should be empty
+    const slots = this.getPlayerSlots();
+    if (slots.length === this.players.length) {
+      return { error: false, data: { player: 0 } };
+    } else {
+      return { error: true, msg: `Owner may only join when game is empty` };
+    }
+  }
+
   /** Get game data */
   getGameData() {
     return {
@@ -295,25 +300,11 @@ export class Game {
       event: this.event,
     };
   }
-
-  /** Return object to save */
-  toObject() {
-    return {
-      id: this.id,
-      owner: this.owner,
-      name: this.name,
-      ...this.getGameData(),
-    };
-  }
-
-  /** Save game */
-  save() {
-    saveGameFile(this.id, this.toObject());
-  }
 }
+
+/** Map of all games: game.id => Game */
+Game.all = new Map();
 
 // Event generators
 const event_void = () => ({ type: null });
 const event_pickup = (player, amount) => ({ type: "pickup", player, amount });
-
-export const games = new Map(); // game.id => Game

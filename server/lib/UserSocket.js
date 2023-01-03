@@ -13,13 +13,21 @@ export class UserSocket extends SocketManager {
     });
 
     // Create auth token
-    this.onEvent("gen-token", () => {
+    this.onEvent("gen-token", (payload) => {
       if (this.user) {
-        const token = UserSocket.auth.create(this.getDataToCache());
-        this.log(`Created auth token for ID=${this.user.ID}, valid for ${UserSocket.auth.removeTimeout}ms :: ${token}`);
-        this.emit("gen-token", token); // Send them the token
+        if (this._checkTokenPayload(payload)) {
+          const token = UserSocket.auth.create(this.getDataToCache(payload));
+          this.log(`Created auth token for ID=${this.user.ID}, valid for ${UserSocket.auth.removeTimeout}ms :: ${token}`);
+          this.emit("gen-token", token); // Send them the token
+        } else {
+          const message = `Failed to create auth token -- payload check failed.`;
+          this.log(message);
+          this.emit("html-error", { title: "HTTP 400 - Bad Request", message });
+        }
       } else {
-        this.log(`Request to create auth token in anonymous connection`);
+        const message = `Failed to create auth token -- not signed in.`;
+        this.log(message);
+        this.emit("html-error", { title: "HTTP 401 - Unauthorised", message });
       }
     });
 
@@ -49,7 +57,12 @@ export class UserSocket extends SocketManager {
     super.disconnect();
   }
 
-  /** Called when client redeems a valid token. Super **MUST** be called. */
+  /** Used to check the payload of 'gen-token' -- must be overriden */
+  _checkTokenPayload(payload) {
+    return payload == undefined;
+  }
+
+  /** Called when client redeems a valid token. Super **MUST** be called. @async */
   async _onRedeemedToken(token, data) {
     this.user = await getUser(data.UID);
   }
