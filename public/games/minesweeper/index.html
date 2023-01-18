@@ -5,44 +5,15 @@
     <meta charset="utf-8">
     <link rel="shortcut icon" href="icon.png" type="image/png">
     <link rel="stylesheet" href="assets/style.css">
-    <title>Mine Sweeper</title>
-    <script type="module" src="src/main.js" charset="utf-8"></script>
+    <title>Minesweeper</title>
 </head>
 
-<body oncontextmenu='return false;'>
-    <table>
-        <tr>
-            <td rowspan='10'>
-                <div id='container'></div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan='10'>
-                <h2>Left Click - Reveal (no mine)<br>Right Click - Flag = MINE!!!</h2>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="10">
-                Time Spent: <span id="timer"></span>
-            </td>
-        </tr>
-        <tr>
-            <td><button id="btn-start">Start Game</button></td>
-            <td><button id="btn-end">End Game</button></td>
-        </tr>
-        <tr>
-            <td colspan='10'>
-                <b>Cell Width:</b>
-                <br>
-                <input type='number' min='10' max='100' id='cell-width' />
-                <br>
-                <b>Mine Count:</b>
-                <br>
-                <input type='number' min='1' step='1' max='100' id='mine-count' />
-                <br>
-            </td>
-        </tr>
-    </table>
+<body>
+    <div id="wrapper">
+        <div id="container"></div>
+    </div>
+
+    <script type="module" src="src/main.js" charset="utf-8"></script>
 </body>
 
 </html>
