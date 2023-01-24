@@ -3,6 +3,7 @@ import { Server as SocketIOServer } from 'socket.io';
 import router from './router.js';
 import { db, getUser } from "./database.js";
 import getConnection from './connections/get.js';
+import JoinConnection from "./connections/join.js";
 import gameExterns from "./games/extern.js";
 import { terminate } from "./utils.js";
 
@@ -23,18 +24,23 @@ async function onConnection(sock) {
   }
 }
 
-export async function start(port) {
-  // Initialise each game
-  console.log("Initialising games");
-  for (let game in gameExterns) {
-    console.log(` - ${game}...`);
-    const extern = gameExterns[game];
-    await extern.init();
-  }
-
+/** Start app on port <port>. Initialise multiplayer games? */
+export async function start(port, initMultiplayer = true) {
   // Open database
   await db.open();
   console.log(`[database]: Opened connection: ${db.path}`);
+  
+  // Initialise each game
+  JoinConnection.allowMultiplayer = initMultiplayer;
+  if (initMultiplayer) {
+    console.log("Initialising games");
+    for (const [game, extern] of Object.entries(gameExterns)) {
+      console.log(` - ${game}...`);
+      await extern.init();
+    }
+  } else {
+    console.log("[!] Skipping game initialisation");
+  }
 
   // Setup express application and middleware
   const app = express();
@@ -56,6 +62,15 @@ export async function start(port) {
     timeout: 500,
     log: true,
     fn: async () => {
+      // Close each game
+      if (initMultiplayer) {
+        console.log("Closing games");
+        for (const [game, extern] of Object.entries(gameExterns)) {
+          console.log(` - ${game}...`);
+          await extern.close();
+        }
+      }
+      
       await db.close(); // Close database handle
       console.log(`[database]: Closed connection: ${db.path}`);
     }

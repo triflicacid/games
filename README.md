@@ -2,6 +2,13 @@ This repository holds (small) games that I have created.
 
 Both single- and multi-player games are included.
 
+# Execution
+- Clone repo
+- Run `npm install`
+- To start the server, run `node main.js [port] [--no-mult]` where
+  - `port` is the port to be hosted on;
+  - `--no-mult` skips the initialisation of multiplayer game data;
+
 # Core Structure
 This section explains how games are structured on the server.
 
@@ -43,6 +50,7 @@ The server root is located at `server/`.
       - `"text"`. Text input box, with placeholder `placeholder` and default value `value`.
     - `GAME_HEADERS: object` -- Object mapping game property to table header text.
     - `async init(): void` -- Called when server is started; initialise game.
+    - `async close(): void` -- Called when server is closing; close game.
     - `async createGame(owner: number, name: string, params: { [name: string]: any }): id` -- Creates a new game file with given parameters (from `CREATE_NEW_FIELDS`).
     - `async deleteGame(id: string): boolean` -- Delete a game, return if success.
     - `getGame(id: string): object` -- Get game with given ID. Return object depends on implementation, but must satisfy the requirements of a `GameObject` (described below).

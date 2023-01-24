@@ -18,9 +18,38 @@ router.get('/help/:name/', (req, res) => {
     const game = getInfo()[name];
     const buff = fs.readFileSync(mdPath);
     const mdhtml = md.render(buff.toString(), { html: true });
-    const html = `<html><head><title>${game.name}</title><link rel="shortcut icon" href="/assets/help.png" type="image/png"><link rel="stylesheet" href="/assets/github-markdown-dark.css"><style>body{margin:0;}.markdown-body{min-width:100%;min-height:100%;}</style></head><body><div class="markdown-body">${mdhtml}</div></body></html>`;
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/assets/help.png" type="image/png">
+    <link rel="stylesheet" href="/assets/github-markdown-dark.css">
+    <style type="text/css">body{margin:0;}.markdown-body{min-width:100%;min-height:100%;}</style>
+    <title>${game.name}</title>
+</head>
+<body>
+    <div class="markdown-body">${mdhtml}</div>
+</body>
+</html>`;
     res.send(html);
   } else {
-    res.send(`<h1>404 Not Found</h1><p>Unknown game identifier \`${name}'</p><span>Queried path: <code>${mdPath}</code></span>`);
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/index.css">
+    <title>Not Found</title>
+</head>
+<body>
+    <h1>404 Not Found</h1>
+    <p>Unknown game identifier \`${name}'</p>
+    <span>Queried path: <code>${mdPath}</code></span>
+</body>
+</html>`;
+    res.send(html);
   }
 });

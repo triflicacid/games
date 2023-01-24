@@ -3,6 +3,7 @@ export class SocketManager {
   constructor(sock) {
     this.flag = 0;
     this._callbacks = {};
+    this._eventPromises = {};
     this.sock = sock;
     this.sock.on("disconnect", () => this.disconnect());
     SocketManager.all.set(this.sock.id, this);
@@ -19,13 +20,25 @@ export class SocketManager {
     // if (!(event in this._callbacks)) console.warn(`<SocketManager>: emitted event '%s' does not have a registered callback`, event);
     this.sock.emit(event, ...args);
   }
+  /** Emit event, resolve when response recieved. Nothing is returned; callback should still be used. */
+  emitWait(event, ...args) {
+    if (this._eventPromises[event]) throw new Error(`Event '${event}' is already being awaited upon.`);
+    return new Promise((res) => {
+      this._eventPromises[event] = res;
+    });
+  }
   /** Set a callback for an event. Only one callback per event. */
   onEvent(name, cb, requiredFlag) {
     this._callbacks[name] = cb;
     this.sock.on(name, (arg) => {
-      if (this._callbacks[name]) {
-        if (requiredFlag === undefined || (this.flag & requiredFlag) === requiredFlag)
+      if (requiredFlag === undefined || (this.flag & requiredFlag) === requiredFlag) {
+        if (this._callbacks[name]) {
           this._callbacks[name](arg);
+        }
+        if (this._eventPromises[name]) {
+          this._eventPromises[name](arg);
+          delete this._eventPromises[name];
+        }
       }
     });
   }
