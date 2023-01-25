@@ -1,6 +1,6 @@
 import BaseGame from "../Game.js";
 import { createDeck, canPlayCard, isWildcard, getColorOffset, isPickup4, C_TYPES } from "../../../public/games/uno/src/cards.js";
-import { ID as GAME_ID } from "./extern.js"
+import { ID as GAME_ID } from "./extern.js";
 
 const DECK_SIZE = 7;
 

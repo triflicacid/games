@@ -19,13 +19,38 @@ export class Connection extends UserSocket {
   async _onRedeemedToken(token, data) {
     await super._onRedeemedToken(token, data);
     this.game = data.game;
-    this.invokeEvent("game-info"); // Game information
+    // Check that game exists
+    if (this.game in extern) {
+      if (!Connection.allowMultiplayer && getInfo()[this.game].singleplayer === false) {
+        this.emitMultiplayerDisabledError();
+      } else {
+        this.invokeEvent("game-info"); // Game information
+      }
+    } else {
+      this.emitGameError();
+    }
+  }
+
+  /** Send client an error message stating that  this.game cannot be found */
+  emitGameError() {
+    this.emit("html-error", {
+      title: "HTTP 404 - Not Found",
+      message: `Cannot find game \`${this.game}'`,
+    });
+  }
+
+  /** Send client an error message stating that multiplayer games are disabled */
+  emitMultiplayerDisabledError() {
+    this.emit("html-error", {
+      title: "HTTP 403 - Forbidden",
+      message: `Multiplayer games have been restricted -- access denied to \`${this.game}'`,
+    });
   }
 
   /** Setup events */
   _setup() {
     this.onEvent("game-info", async () => {
-      if (this.user && this.game) {
+      if (this.user && this.game && this.extern) {
         const all = getInfo();
         // Get all of my games
         this.emit("game-info", {
@@ -39,13 +64,13 @@ export class Connection extends UserSocket {
 
     // Request list of owned games
     this.onEvent("my-games", () => {
-      if (this.user && this.game)
+      if (this.user && this.game && this.extern)
         this.emit("my-games", this.extern.getMyGames(this.user.ID));
     });
 
     // Join a foreign game
     this.onEvent("join-game", async (req) => {
-      if (this.user && this.game) {
+      if (this.user && this.game && this.extern) {
         const title = `Unable to Join Game`;
         const game = this.extern.getGame(req.id); // Get game with ID
         if (game) {
@@ -80,7 +105,7 @@ export class Connection extends UserSocket {
 
     // Join a game created by us
     this.onEvent("join-my-game", async (gid) => {
-      if (this.user && this.game) {
+      if (this.user && this.game && this.extern) {
         // Get game
         const title = `Unable to Join Game`;
         const game = this.extern.getGame(gid); // Get game with ID
@@ -106,7 +131,7 @@ export class Connection extends UserSocket {
 
     // Create a game
     this.onEvent("create-game", async ({ name, fields }) => {
-      if (this.user && this.game) {
+      if (this.user && this.game && this.extern) {
         const gid = await this.extern.createGame(this.user.ID, name, fields);
         this.emit("create-game", gid);
         this.invokeEvent("my-games"); // Update game list
@@ -115,7 +140,7 @@ export class Connection extends UserSocket {
 
     // Request to delete a game
     this.onEvent("delete-game", (gid) => {
-      if (this.user) {
+      if (this.user && this.game && this.extern) {
         const ok = this.extern.deleteGame(gid);
         if (ok) {
           this.invokeEvent("my-games"); // Update game list
@@ -138,5 +163,8 @@ export class Connection extends UserSocket {
     };
   }
 }
+
+/** Alloy joining of multiplayer games? */
+Connection.allowMultiplayer = true;
 
 export default Connection;

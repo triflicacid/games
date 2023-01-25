@@ -32,6 +32,15 @@ export async function init() {
   }
 }
 
+export async function close() {
+  // Save every game
+  for (const [id, game] of Game.all.entries()) {
+    const data = game.toObject();
+    await saveGame(ID, id, JSON.stringify(data));
+  }
+  Game.all.clear();
+}
+
 /** Get game with given ID. */
 export function getGame(id) {
   return Game.all.get(id);
@@ -67,7 +76,7 @@ export async function createGame(owner, name, params) {
 
 
 /** Delete game. */
-export function deleteGame(id) {
+export async function deleteGame(id) {
   if (Game.all.has(id)) {
     deleteGameFile(ID, id);
     Game.all.delete(id);

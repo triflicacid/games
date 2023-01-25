@@ -16,6 +16,11 @@
   "ludo": {
     "name": "Ludo"
   },
+  "MAD": {
+    "name": "MAD Missile Destruction",
+    "singleplayer": false,
+    "icon": "favicon.ico"
+  },
   "marble-solitaire": {
     "name": "Marble Solitaire"
   },
@@ -24,6 +29,10 @@
   },
   "obstacles": {
     "name": "Obstacles"
+  },
+  "pong": {
+    "name": "Pong",
+    "icon": "assets/pong.png"
   },
   "reaction-time": {
     "name": "Reaction Time"
