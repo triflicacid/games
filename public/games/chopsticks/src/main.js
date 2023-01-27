@@ -30,7 +30,7 @@ function main() {
         container.innerHTML = "";
         const game = createGame();
         if (game) {
-            game.display(container);
+            game.display(container, x => onUpdate(x, game));
             window.game = game;
         }
     });
