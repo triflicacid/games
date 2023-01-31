@@ -59,10 +59,9 @@ The server root is located at `server/`.
     
 
 # TODO
-Make game multiplayer game listing & joining a common behaviour
-
 Games:
 - Chase the Ace (multiplayer)
 - Sevens (multiplayer)
 - Normal and reverse Knock-Out Wist (multiplayer)
 - Rummy (multiplayer)
+- 2048

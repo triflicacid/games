@@ -26,7 +26,7 @@ router.get('/help/:name/', (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="/assets/help.png" type="image/png">
     <link rel="stylesheet" href="/assets/github-markdown-dark.css">
-    <style type="text/css">body{margin:0;}.markdown-body{min-width:100%;min-height:100%;}</style>
+    <style type="text/css">body{margin:0;width:100vw;height:100vh;}.markdown-body{min-width:100%;min-height:100%;}</style>
     <title>${game.name}</title>
 </head>
 <body>
