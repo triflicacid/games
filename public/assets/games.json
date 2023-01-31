@@ -52,6 +52,10 @@
   "solitaire-classic": {
     "name": "Solitaire"
   },
+  "sudoku": {
+    "name": "Sudoku",
+    "icon": "assets/favicon.png"
+  },
   "tetris": {
     "name": "Tetris"
   },

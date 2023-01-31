@@ -66,4 +66,3 @@ Games:
 - Sevens (multiplayer)
 - Normal and reverse Knock-Out Wist (multiplayer)
 - Rummy (multiplayer)
-- Uno (singleplayer?, multiplayer)

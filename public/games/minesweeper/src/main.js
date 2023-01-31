@@ -78,7 +78,11 @@ window.addEventListener("load", async function () {
             clickSettingsButton();
         } else if (Math.hypot(x - btnNew.x, y - btnNew.y) <= 2 * btnNew.r) {
             // New Game button
-            game.endGame();
+            if (game.gameover) {
+                game.newGrid();
+            } else {
+                game.endGame();
+            }
         } else if (x >= gameLocation.x && x <= gameLocation.x + gameLocation.w && y >= gameLocation.y && y <= gameLocation.y + gameLocation.h) {
             // Over game
             // Adjust co-ordinates
