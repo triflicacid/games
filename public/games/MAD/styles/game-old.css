@@ -1,0 +1,290 @@
+body {
+	font-family: Arial, Calibri;
+}
+.text_vsmall { font-size: .6em; }
+/*	----------------- SVG STYLES --------------------------- */
+svg#map {
+	height: 550px;
+	width: 1170px;
+	border: 1px solid black;
+}
+svg#map[state='idle']:hover { cursor: default; }
+svg#map[state='action']:hover { cursor: crosshair; }
+svg#map[state='aim']:hover { cursor: crosshair; }
+-svg#map[state='aim'] .weapon_radius:hover { cursor: crosshair; }
+svg#map[state='action'] { background: #CDCDCD; }
+
+.country { stroke: white; stroke-width: .2; }
+.country:hover { stroke: magenta; stroke-width: 2; fill-opacity: .9; }
+.country.highlighted { stroke: magenta; fill: rgb(73, 50, 71); stroke-width: 2; }
+
+.silo { stroke: black; stroke-width: 1; fill: #F7FF00; }
+.silo:hover { stroke-width: 2; stroke: magenta; fill: #FFFF00; fill-opacity: .9; }
+.silo.highlighted { stroke: magenta; stroke-width: 2; }
+
+.city { stroke: none; fill: black; r: 2; }
+.city:hover { r: 4; }
+
+.defence_post { stroke: black; stroke-width: 1; fill: lime; rx: 1; }
+.defence_post:hover { stroke-width: 2; stroke: magenta; }
+.defence_post.highlighted { stroke-width: 2; stroke: magenta; }
+
+.explosion { stroke: orange; stroke-width: .6; fill: orange; animation: explosion .6s linear infinite; }
+.explosion_by_defence { stroke: orange; stroke-width: .6; fill: orangered; animation: explosion 1s linear infinite; }  /* When defence missile hits an enemy missile...  */
+
+.weapon_radius { stroke: black; stroke-width: 3; fill: #CCC2; }
+
+/* --------------------- OTHER -----------------------------*/
+.flag_ref, .flag_small {
+	height: 10px;
+	width: 22px;
+}
+.flag_med {
+	height: 20px;
+	width: 36px;
+}
+.flag_title, .flag_big {
+	height: 30px;
+	width: 50px;
+	border: 1px solid black;
+}
+
+fieldset table * {
+	text-align: left;
+}
+table.pretty { border-collapse: collapse; }
+table.pretty thead th { background: silver; }
+
+.clock {
+	color: lime;
+	background-color: rgb(100, 100, 98);
+	border: 1px solid rgb(43, 47, 48);
+	font-family: monospace;
+	padding: 1px;
+}
+.clock.big {
+	padding: 4px;
+	border: 2px solid rgb(43, 47, 48);
+	font-family: monospace;
+}
+.clock.alert {
+	animation: clock_flash 1s linear infinite;
+	color: ghostwhite;
+}
+.clock.done {
+	animation: none;
+	color: ghostwhite;
+	background: rgb(63, 83, 64);
+}
+
+/*	Meters  */
+meter { width: 75px; }
+meter.small { width: 50px; }
+/* When on state->'open' */
+#_wait_ {
+	color: orangered;
+	padding: 6px;
+	margin: 50px;
+	border: 2px solid orange;
+}
+#_paused_ {
+	color: crimson;
+	padding: 6px;
+	margin: 50px;
+	border: 2px solid red;
+	background: #d444;
+}
+
+/* Enemy summary card */
+#enemy_summary {
+	border: 1px solid black;
+	border-radius: 3px;
+	box-shadow: 2px 2px 1px gray;
+}
+#enemy_summary table {
+	font-size: .8em;
+}
+
+.info_map_hover_content {
+	border: 1px solid black;
+	background: #EDEDED;
+	padding: 6px;
+}
+#info_country_hover { width: 100px; }
+#info_message {
+	width: 650px;
+	height: 70px;
+	color: mediumblue;
+	text-align: center;
+	overflow: scroll;
+}
+
+/* Bit to right of map with info in */
+#control_board {
+	padding: 5px;
+	border: 1px solid black;
+	height: calc(550px + 107px);
+	width: 300px;
+	overflow: scroll;
+}
+#popup_control_board {
+	padding: 5px;
+	border: 1px solid black;
+	height: calc(550px + 107px);
+	width: 300px;
+	overflow: scroll;
+	background: #EDEDED;
+}
+#popup_control_board_title {
+	font-weight: bold;
+	text-decoration: underline;
+	font-size: 1.2em;
+}
+
+/* Weapon list styles */
+.weapon_list_th {
+	font-size: .85em;
+}
+
+.centre{ text-align: center; }
+
+/* Title in table */
+.tbl_title {
+	text-decoration: underline;
+	text-align: center;
+}
+
+#map-city-info-wrapper {
+	border: 1px solid black;
+	border-radius: 6px;
+	box-shadow: 2px 2px 3px gray;
+}
+
+/* Custom Scrollbar */
+
+::-webkit-scrollbar { width: 2px; height: 2px; }
+::-webkit-scrollbar-track { border-radius: 10px; }
+
+/* The bar itself  */
+::-webkit-scrollbar-thumb {
+  background: red;
+  border-radius: 15px;
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover { background: #b30000; }
+
+/*  -------------------------------------------------- Buttons ---------------------------------------------------  */
+a {
+	color: mediumblue;
+	text-decoration: underline;
+}
+a:hover {
+	color: red;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.hover:hover { cursor: pointer; }
+
+.btn_blue {
+	font-size: .7em;
+	background: lightblue;
+	border: 2px solid mediumblue;
+	color: black;
+	outline: none;
+}
+.btn_blue:hover {
+	cursor: pointer;
+	background: navy;
+	border: 2px solid blue;
+	color: white;
+}
+button.cancel_action {
+	font-size: 0.65em;
+	font-style: italic;
+}
+.btn_red {
+	font-size: 0.7em;
+	text-transform: uppercase;
+	background: tomato;
+	border: 2px solid red;
+	color: black;
+	outline: none;
+}
+.btn_red:hover {
+	cursor: pointer;
+	background: crimson;
+	border: 2px solid tomato;
+	color: white;
+}
+
+.btn_disabled {
+	font-size: 0.7em;
+	background: #EDEDED;
+	border: 2px solid gray;
+	color: black;
+	opacity: 0.6;
+	outline: none;
+}
+.btn_disabled:hover {
+	cursor: not-allowed;
+}
+
+.btn_green {
+	font-size: 0.7em;
+	background: lightgreen;
+	border: 2px solid forestgreen;
+	color: black;
+	outline: none;
+}
+.btn_green:hover {
+	cursor: pointer;
+	background: forestgreen;
+	border: 2px solid limegreen;
+	color: white;
+}
+
+.close_btn {
+	border: 1px solid black;
+	color: white;
+	padding: 2px;
+	font-size: 1.3em;
+	cursor: default;
+	background: #FA2332;
+}
+
+.close_btn:hover {
+	cursor: pointer;
+	background: #F5656E;
+}
+abbr[onclick]:hover { cursor: pointer; text-decoration: underline; }
+
+/* Statuses */
+.status_none { color: gray; }
+.status_good { color: forestgreen; }
+.status_bad  { color: red; }
+.status_neutral { color: #F58300; }
+
+.wait {
+	border: 12px solid #f3f3f3;
+	border-top: 12px solid rgb(34, 143, 48);
+	border-radius: 50%;
+	width: 70px;
+	height: 70px;
+	animation: load 2s linear infinite;
+}
+/* ------------------ ANIMATIONS -------------- */
+@keyframes clock_flash {
+	50% {
+		background-color: #DB6565;
+	}
+}
+@keyframes explosion {
+	50% {
+		opacity: .7;
+		fill: orangered;
+	}
+}
+@keyframes load {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

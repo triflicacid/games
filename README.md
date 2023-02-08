@@ -65,3 +65,6 @@ Games:
 - Normal and reverse Knock-Out Wist (multiplayer)
 - Rummy (multiplayer)
 - 2048
+
+# In Progress
+- MAD Missile destruction. Implemented map, working on events

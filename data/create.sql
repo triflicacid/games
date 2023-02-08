@@ -8,3 +8,10 @@ CREATE TABLE Users (
   -- Date created (JS Date())
   Created text
 );
+
+-- MAD: games
+CREATE TABLE MAD_Games (
+    ID text PRIMARY KEY, -- result from uuid()
+    Name text, -- Game name
+    Owner integer -- ID of owner
+);
