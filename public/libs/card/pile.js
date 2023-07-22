@@ -24,6 +24,9 @@ export class Pile {
     /** Can drag cards from etc... */
     this.isInteractive = true;
 
+    /** Display pile border */
+    this.showBorder = true;
+
     /** Max size of pile */
     this.maxSize = Infinity;
 
@@ -104,15 +107,19 @@ export class Pile {
   }
 
   display(ctx) {
+    if (this._style === PileStyle.invisible) return;
+
     if (this.cards.length === 0 || (this.cards.length === 1 && this.cards[0].isFree)) {
-      // Outline
-      ctx.strokeStyle = "#fafafa";
-      ctx.lineWidth = 2;
-      ctx.fillStyle = "#ffffff19";
-      ctx.beginPath();
-      ctx.rect(this.x, this.y, this.cw, this.ch); // 5
-      ctx.fill();
-      ctx.stroke();
+      if (this.showBorder) {
+        // Outline
+        ctx.strokeStyle = "#fafafa";
+        ctx.lineWidth = 2;
+        ctx.fillStyle = "#ffffff19";
+        ctx.beginPath();
+        ctx.rect(this.x, this.y, this.cw, this.ch); // 5
+        ctx.fill();
+        ctx.stroke();
+      }
 
       // Show destination suit/type card
       if (this.placeholderCard) {
@@ -135,13 +142,15 @@ export class Pile {
       }
     }
 
-    ctx.strokeStyle = "#ffffff";
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.fill();
-    ctx.strokeStyle = "#c8c8c8";
-    ctx.strokeRect(this.x, this.y, this.w, this.h);
+    // ctx.strokeStyle = "#ffffff";
+    // ctx.beginPath();
+    // ctx.arc(this.x, this.y, 5, 0, 2 * Math.PI);
+    // ctx.stroke();
+    // ctx.fill();
+    if (this.showBorder) {
+      ctx.strokeStyle = "#c8c8c8";
+      ctx.strokeRect(this.x, this.y, this.w, this.h);
+    }
   }
 
   toString() {
@@ -184,6 +193,7 @@ export class Pile {
    * @return {Boolean} Is over pile body?
    */
   contains(x, y) {
+    if (this._style === PileStyle.invisible) return false;
     return (x > this.x && x < this.x + this.w && y > this.y && y < this.y + this.h);
   }
 
@@ -194,10 +204,16 @@ export class Pile {
    * @return {Card | null} Card
    */
   cardContains(x, y) {
+    if (this._style === PileStyle.invisible) return null;
     for (let i = this.cards.length - 1; i > -1; i--) {
       if (this.cards[i].contains(x, y)) return this.cards[i];
     }
     return null;
+  }
+
+  /** Return if this pile contains the given card */
+  includes(card) {
+    return this.cards.includes(card);
   }
 
   /**
@@ -215,7 +231,8 @@ export class Pile {
 }
 
 export const PileStyle = Object.freeze({
-  allHidden: 0,
-  topRevealed: 1,
-  allRevealed: 255,
+  invisible: 1,
+  allHidden: 2,
+  topRevealed: 4,
+  allRevealed: 8,
 });

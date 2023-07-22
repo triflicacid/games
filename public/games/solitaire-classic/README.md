@@ -1,6 +1,6 @@
 # Solitaire Classic
 
-Implmentation of the classic version of Solitaire.
+Implementation of the classic version of Solitaire.
 
 ## Attribution
 

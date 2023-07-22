@@ -12,7 +12,9 @@ export class Card {
 
     this.isHidden = false;
     this.isHighlighted = false;
+    this.isGlowing = false;
     this.isFree = false; // Is card free, or locked into place by Pile?
+    this.customFilter = ""; // Custom filter string. This is appended to internal filter string.
 
     // If rendered; top-left position of card
     this.x = NaN;
@@ -99,13 +101,21 @@ export class Card {
   display(ctx) {
     const img = this.getImage();
     if (img) {
-      let filter = ctx.filter;
+      let filter = ctx.filter, sBlur = ctx.shadowBlur, sColor = ctx.shadowColor;
       if (this.isHighlighted) {
-        ctx.filter = "sepia(50%)";
+        ctx.filter = "sepia(60%) " + this.customFilter;
+      } else {
+        ctx.filter = this.customFilter;
+      }
+      if (this.isGlowing) {
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = "white";
       }
       ctx.drawImage(img, this.x, this.y, this.w, this.h);
 
       ctx.filter = filter;
+      ctx.shadowBlur = sBlur;
+      ctx.shadowColor = sColor;
       return true;
     } else {
       return false;
@@ -158,4 +168,16 @@ Card.images = {
   clubs: [],
   diamonds: [],
   hidden: undefined,
+};
+
+/** Scoring: given a score for the Ace, returns a function which returns the numerical score of the given card */
+Card.getScoringFn = aceScore => card => {
+  if (!isNaN(+card.type)) return +card.type; // Numerical card type?
+  switch (card.type) {
+    case "A": return aceScore;
+    case "J": return 11;
+    case "Q": return 12;
+    case "K": return 13;
+    default: return NaN;
+  }
 };

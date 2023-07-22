@@ -21,6 +21,13 @@ export class Deck {
   }
 
   /**
+   * Count cards no in a pile
+   */
+  countFreeCards() {
+    return this.cards.length;
+  }
+
+  /**
    * Assemble all card
    */
   reset() {
